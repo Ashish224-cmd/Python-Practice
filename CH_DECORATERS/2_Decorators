@@ -1,0 +1,20 @@
+#Authentication Decorator (Security)
+def  check_login(func):
+    def wrapper(user_status):
+        if user_status=="Authenticated":
+            return func(user_status)
+        else:
+            return "Access Denied:Please login first"
+    return wrapper
+    
+@check_login   
+def view_dashboard(status):
+    return "Welcome to your dashboard"
+@check_login
+def view_transaction(status):
+    return "Here is your transaction"
+
+res1 = view_dashboard("guest")
+print(res1)
+res2 = view_dashboard("Authenticated") 
+print(res2)

@@ -1,0 +1,18 @@
+#Timing Decorators (Performance Monitoring)
+
+import time 
+def time_decorators(func):
+    def wrapper(*args,**kwargs):
+        start_time = time.time()
+        result = func(*args,**kwargs) 
+        end_time = time.time()
+        print(f"Execution of time {func.__name__} {end_time-start_time:4f} seconds")
+        return result
+    return wrapper
+
+@time_decorators
+def complex_calculation():
+    time.sleep(5)
+    print("Calculation Complete")
+    
+complex_calculation()

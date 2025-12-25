@@ -1,0 +1,45 @@
+import pandas as pd 
+import matplotlib.pyplot as plt
+
+# 1. Load Data
+df = pd.read_csv("C:/Users/hp/OneDrive/Documents/TEXT_FILES/CH_DECORATORS/transaction.csv")
+
+# 2. Fix Date Handling
+df['Date'] = pd.to_datetime(df['Date'])
+df['Month_Period'] = df['Date'].dt.to_period("M")
+
+# 3. Categorization Logic (Using .apply)
+def categorize(description):
+    # Tip: Using .lower() makes your code more robust against typos
+    desc = description.lower()
+    if "starbucks" in desc: return "coffee"
+    elif "amazon" in desc: return "shopping"
+    elif "walmart" in desc: return "groceries"
+    elif "uber" in desc: return "transport"
+    elif "netflix" in desc: return "entertainment"
+    elif "salary" in desc: return "income"
+    elif "dominos" in desc: return "food"
+    elif "electric" in desc: return "utilities"
+    else: return "other"
+
+df["Category"] = df["Description"].apply(categorize)
+
+# 4. Filter and Prepare Data for Plotting
+# We use .abs() because pie charts require positive values
+expenses = df[df["Amount"] < 0].copy()
+expenses["Abs_Amount"] = expenses["Amount"].abs() 
+
+category_totals = expenses.groupby("Category")["Abs_Amount"].sum()
+
+# 5. Visualizing
+plt.figure(figsize=(8, 8))
+# category_totals.index provides the labels, category_totals provides the sizes
+plt.pie(category_totals, labels=category_totals.index, autopct="%1.1f%%", startangle=140, colors=plt.cm.Paired.colors)
+
+plt.title("Spending Habits by Category (January 2025)")
+plt.show()
+
+# 6. Monthly Summary (Optional console output)
+summary = df.groupby(["Month_Period", "Category"])["Amount"].sum().reset_index()
+print("\n--- Monthly Summary ---")
+print(summary)
